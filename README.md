@@ -16,7 +16,7 @@
 ## 一键安装（服务器执行）
 
 ```bash
-curl -sSfL https://raw.githubusercontent.com/hopezoo/zooai/main/quick-install.sh | bash
+curl -sSfL https://raw.githubusercontent.com/hopezoo/zooai/master/quick-install.sh | bash
 ```
 
 或先克隆再执行：
