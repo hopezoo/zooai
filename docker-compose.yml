@@ -1,0 +1,183 @@
+# Docker Compose：全量服务（MySQL + Redis + 迁移 + 8 个业务服务 + 网关 + 前端）
+# 使用前复制 .env.example 为 .env 并填写 REGISTRY、VERSION、MYSQL_*、REDIS_*、JWT_* 等
+# 启动：docker compose --env-file .env up -d
+# 首次部署请先执行：docker compose run --rm migrate
+
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-zooai}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  migrate:
+    image: ${REGISTRY:-docker.io/library}/zooai-migrate:${VERSION:-latest}
+    restart: "no"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      MYSQL_HOST: mysql:3306
+
+  aitransfer-client:
+    image: ${REGISTRY:-docker.io/library}/zooai-aitransfer-client:${VERSION:-latest}
+    ports:
+      - "8101:8101"
+    depends_on:
+      mysql: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    env_file: .env
+    environment:
+      MYSQL_HOST: mysql:3306
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+
+  aitransfer-admin:
+    image: ${REGISTRY:-docker.io/library}/zooai-aitransfer-admin:${VERSION:-latest}
+    ports:
+      - "8201:8201"
+    depends_on:
+      mysql: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    env_file: .env
+    environment:
+      MYSQL_HOST: mysql:3306
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+
+  aimirror-client:
+    image: ${REGISTRY:-docker.io/library}/zooai-aimirror-client:${VERSION:-latest}
+    ports:
+      - "8102:8102"
+    depends_on:
+      mysql: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    env_file: .env
+    environment:
+      MYSQL_HOST: mysql:3306
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+
+  aimirror-admin:
+    image: ${REGISTRY:-docker.io/library}/zooai-aimirror-admin:${VERSION:-latest}
+    ports:
+      - "8202:8202"
+    depends_on:
+      mysql: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    env_file: .env
+    environment:
+      MYSQL_HOST: mysql:3306
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+
+  aigateway-client:
+    image: ${REGISTRY:-docker.io/library}/zooai-aigateway-client:${VERSION:-latest}
+    ports:
+      - "8103:8103"
+    depends_on:
+      mysql: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    env_file: .env
+    environment:
+      MYSQL_HOST: mysql:3306
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+
+  aigateway-admin:
+    image: ${REGISTRY:-docker.io/library}/zooai-aigateway-admin:${VERSION:-latest}
+    ports:
+      - "8203:8203"
+    depends_on:
+      mysql: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    env_file: .env
+    environment:
+      MYSQL_HOST: mysql:3306
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+
+  aishop-client:
+    image: ${REGISTRY:-docker.io/library}/zooai-aishop-client:${VERSION:-latest}
+    ports:
+      - "8104:8104"
+    depends_on:
+      mysql: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    env_file: .env
+    environment:
+      MYSQL_HOST: mysql:3306
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+
+  aishop-admin:
+    image: ${REGISTRY:-docker.io/library}/zooai-aishop-admin:${VERSION:-latest}
+    ports:
+      - "8204:8204"
+    depends_on:
+      mysql: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    env_file: .env
+    environment:
+      MYSQL_HOST: mysql:3306
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+
+  gateway:
+    image: ${REGISTRY:-docker.io/library}/zooai-gateway:${VERSION:-latest}
+    ports:
+      - "8599:8599"
+    depends_on:
+      - aitransfer-client
+      - aitransfer-admin
+      - aimirror-client
+      - aimirror-admin
+      - aigateway-client
+      - aigateway-admin
+      - aishop-client
+      - aishop-admin
+    environment:
+      AITRANSFER_CLIENT_URL: http://aitransfer-client:8101
+      AITRANSFER_ADMIN_URL: http://aitransfer-admin:8201
+      AIMIRROR_CLIENT_URL: http://aimirror-client:8102
+      AIMIRROR_ADMIN_URL: http://aimirror-admin:8202
+      AIGATEWAY_CLIENT_URL: http://aigateway-client:8103
+      AIGATEWAY_ADMIN_URL: http://aigateway-admin:8203
+      AISHOP_CLIENT_URL: http://aishop-client:8104
+      AISHOP_ADMIN_URL: http://aishop-admin:8204
+
+  frontend:
+    image: ${REGISTRY:-docker.io/library}/zooai-frontend:${VERSION:-latest}
+    ports:
+      - "80:80"
+    depends_on:
+      - gateway
+
+volumes:
+  mysql_data:
+  redis_data:

@@ -1,0 +1,55 @@
+# Binaries（仅允许放在 bin/ 下；根目录若误生成则忽略并可用 make clean 清理）
+bin/
+/client
+/admin
+/migrate
+/gateway
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Code coverage
+*.out
+coverage.*
+*.coverprofile
+profile.cov
+
+# Dependency directories
+vendor/
+
+# Go workspace file
+go.work
+go.work.sum
+
+# Environment files
+# .env
+# .env.prod
+# .env.test
+
+# Editor/IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+logs/
+
+# Uploaded files (admin image upload)
+uploads/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Wire generated (optional, can be committed)
+# wire_gen.go
+
+.pnpm-store
+web/node_modules
