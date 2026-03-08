@@ -14,8 +14,8 @@ OS="$(uname -s)"
 ARCH="$(uname -m)"
 echo "Detected: $OS / $ARCH (Docker will pull the matching image arch automatically)."
 
-# 读取配置
-export REGISTRY="${REGISTRY:-docker.io/yourorg}"
+# 读取配置（镜像：hopezoo/gateway:linux-<版本>；hopezoo/<产品>:backend-<端>-linux-<版本>；hopezoo/aishop:frontend-<端>-linux-<版本>；hopezoo/zooai:migrate-linux-<版本>）
+export REGISTRY="${REGISTRY:-hopezoo}"
 export VERSION="${VERSION:-latest}"
 if [ -n "$1" ]; then
   export VERSION="$1"
@@ -56,4 +56,4 @@ $COMPOSE pull
 echo "Starting all services..."
 $COMPOSE up -d
 
-echo "Done. Frontend: http://<this-server>/ (port 80). Admin: http://<this-server>/aishop/admin"
+echo "Done. Frontend client: http://<this-server>/ (port 80). Frontend admin: http://<this-server>:8080/ . Admin API: http://<this-server>/aishop/admin"
