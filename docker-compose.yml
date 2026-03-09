@@ -1,5 +1,5 @@
 # Docker Compose：全量服务（MySQL + Redis + 迁移 + 8 个业务后端 + 网关 + 前端 client/admin）
-# 镜像约定：gateway 独立仓库 hopezoo/gateway:linux-<版本>；biz 产品 hopezoo/<产品>:backend-<端>-linux-<版本>；aishop 前端 hopezoo/aishop:frontend-<端>-linux-<版本>；migrate hopezoo/zooai-migrate:linux-<版本>
+# 镜像约定：统一 zooai- 前缀。gateway hopezoo/zooai-gateway:linux-<版本>；biz 产品 hopezoo/zooai-<产品>:backend-<端>-linux-<版本>；aishop 前端 hopezoo/zooai-aishop:frontend-<端>-linux-<版本>；migrate hopezoo/zooai-migrate:linux-<版本>
 # 使用前复制 .env.example 为 .env 并填写 REGISTRY、VERSION、MYSQL_*、REDIS_*、JWT_* 等
 # 启动：docker compose --env-file .env up -d
 # 首次部署请先执行：docker compose run --rm migrate
@@ -46,7 +46,7 @@ services:
       MYSQL_HOST: mysql:3306
 
   aitransfer-client:
-    image: ${REGISTRY:-hopezoo}/aitransfer:backend-client-linux-${VERSION:-latest}
+    image: ${REGISTRY:-hopezoo}/zooai-aitransfer:backend-client-linux-${VERSION:-latest}
     ports:
       - "8101:8101"
     depends_on:
@@ -59,7 +59,7 @@ services:
       REDIS_PORT: "6379"
 
   aitransfer-admin:
-    image: ${REGISTRY:-hopezoo}/aitransfer:backend-admin-linux-${VERSION:-latest}
+    image: ${REGISTRY:-hopezoo}/zooai-aitransfer:backend-admin-linux-${VERSION:-latest}
     ports:
       - "8201:8201"
     depends_on:
@@ -72,7 +72,7 @@ services:
       REDIS_PORT: "6379"
 
   aimirror-client:
-    image: ${REGISTRY:-hopezoo}/aimirror:backend-client-linux-${VERSION:-latest}
+    image: ${REGISTRY:-hopezoo}/zooai-aimirror:backend-client-linux-${VERSION:-latest}
     ports:
       - "8102:8102"
     depends_on:
@@ -85,7 +85,7 @@ services:
       REDIS_PORT: "6379"
 
   aimirror-admin:
-    image: ${REGISTRY:-hopezoo}/aimirror:backend-admin-linux-${VERSION:-latest}
+    image: ${REGISTRY:-hopezoo}/zooai-aimirror:backend-admin-linux-${VERSION:-latest}
     ports:
       - "8202:8202"
     depends_on:
@@ -98,7 +98,7 @@ services:
       REDIS_PORT: "6379"
 
   aigateway-client:
-    image: ${REGISTRY:-hopezoo}/aigateway:backend-client-linux-${VERSION:-latest}
+    image: ${REGISTRY:-hopezoo}/zooai-aigateway:backend-client-linux-${VERSION:-latest}
     ports:
       - "8103:8103"
     depends_on:
@@ -111,7 +111,7 @@ services:
       REDIS_PORT: "6379"
 
   aigateway-admin:
-    image: ${REGISTRY:-hopezoo}/aigateway:backend-admin-linux-${VERSION:-latest}
+    image: ${REGISTRY:-hopezoo}/zooai-aigateway:backend-admin-linux-${VERSION:-latest}
     ports:
       - "8203:8203"
     depends_on:
@@ -124,7 +124,7 @@ services:
       REDIS_PORT: "6379"
 
   aishop-client:
-    image: ${REGISTRY:-hopezoo}/aishop:backend-client-linux-${VERSION:-latest}
+    image: ${REGISTRY:-hopezoo}/zooai-aishop:backend-client-linux-${VERSION:-latest}
     ports:
       - "8104:8104"
     depends_on:
@@ -137,7 +137,7 @@ services:
       REDIS_PORT: "6379"
 
   aishop-admin:
-    image: ${REGISTRY:-hopezoo}/aishop:backend-admin-linux-${VERSION:-latest}
+    image: ${REGISTRY:-hopezoo}/zooai-aishop:backend-admin-linux-${VERSION:-latest}
     ports:
       - "8204:8204"
     depends_on:
@@ -150,7 +150,7 @@ services:
       REDIS_PORT: "6379"
 
   gateway:
-    image: ${REGISTRY:-hopezoo}/gateway:linux-${VERSION:-latest}
+    image: ${REGISTRY:-hopezoo}/zooai-gateway:linux-${VERSION:-latest}
     ports:
       - "8599:8599"
     depends_on:
@@ -173,14 +173,14 @@ services:
       AISHOP_ADMIN_URL: http://aishop-admin:8204
 
   frontend-client:
-    image: ${REGISTRY:-hopezoo}/aishop:frontend-client-linux-${VERSION:-latest}
+    image: ${REGISTRY:-hopezoo}/zooai-aishop:frontend-client-linux-${VERSION:-latest}
     ports:
       - "80:80"
     depends_on:
       - gateway
 
   frontend-admin:
-    image: ${REGISTRY:-hopezoo}/aishop:frontend-admin-linux-${VERSION:-latest}
+    image: ${REGISTRY:-hopezoo}/zooai-aishop:frontend-admin-linux-${VERSION:-latest}
     ports:
       - "8080:80"
     depends_on:
