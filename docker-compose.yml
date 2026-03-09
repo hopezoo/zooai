@@ -197,14 +197,14 @@ services:
   frontend-client:
     image: ${REGISTRY:-hopezoo}/zooai-aishop:frontend-client-linux-${VERSION:-latest}
     ports:
-      - "80:80"
+      - "8700:80"
     depends_on:
       - gateway
 
   frontend-admin:
     image: ${REGISTRY:-hopezoo}/zooai-aishop:frontend-admin-linux-${VERSION:-latest}
     ports:
-      - "8080:80"
+      - "8701:80"
     depends_on:
       - gateway
 
