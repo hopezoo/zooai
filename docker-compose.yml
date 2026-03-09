@@ -1,5 +1,5 @@
 # Docker Compose：全量服务（MySQL + Redis + 迁移 + 8 个业务后端 + 网关 + 前端 client/admin）
-# 镜像约定：gateway 独立仓库 hopezoo/gateway:linux-<版本>；biz 产品 hopezoo/<产品>:backend-<端>-linux-<版本>；aishop 前端 hopezoo/aishop:frontend-<端>-linux-<版本>；migrate hopezoo/zooai:migrate-linux-<版本>
+# 镜像约定：gateway 独立仓库 hopezoo/gateway:linux-<版本>；biz 产品 hopezoo/<产品>:backend-<端>-linux-<版本>；aishop 前端 hopezoo/aishop:frontend-<端>-linux-<版本>；migrate hopezoo/zooai-migrate:linux-<版本>
 # 使用前复制 .env.example 为 .env 并填写 REGISTRY、VERSION、MYSQL_*、REDIS_*、JWT_* 等
 # 启动：docker compose --env-file .env up -d
 # 首次部署请先执行：docker compose run --rm migrate
@@ -36,7 +36,7 @@ services:
       retries: 5
 
   migrate:
-    image: ${REGISTRY:-hopezoo}/zooai:migrate-linux-${VERSION:-latest}
+    image: ${REGISTRY:-hopezoo}/zooai-migrate:linux-${VERSION:-latest}
     restart: "no"
     depends_on:
       mysql:
