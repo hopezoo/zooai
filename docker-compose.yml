@@ -15,7 +15,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-zooai}
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
@@ -28,7 +28,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "6380:6379"
     volumes:
       - redis_data:/data
     healthcheck:
