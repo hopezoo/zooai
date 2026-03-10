@@ -2,12 +2,18 @@
 # 服务器端一键部署脚本：根据当前系统拉取镜像，使用 docker-compose 启动
 # 用法: ./deploy.sh [VERSION]
 #        VERSION=v1.0.0 ./deploy.sh
-# 需在脚本同目录下存在 docker-compose.yml 和 .env（可自 .env.example 复制）
+# 需在脚本同目录下存在 docker-compose.yml、.env（可自 .env.example 复制）、configs/（手动复制）
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
+
+# 检查 configs/app.yaml 是否存在
+if [ ! -f configs/app.yaml ]; then
+  echo "❌ 未找到 configs/app.yaml，请将项目的 configs/ 目录复制到当前目录（与 docker-compose.yml 同级）"
+  exit 1
+fi
 
 # 检测系统（仅用于提示）
 OS="$(uname -s)"
@@ -31,6 +37,8 @@ if [ ! -f .env ]; then
     exit 1
   fi
 fi
+# 加载 .env 以便读取 SKIP_MIGRATE 等开关
+[ -f .env ] && set -a && source .env && set +a
 
 # 选择 docker compose 命令
 if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
@@ -47,8 +55,13 @@ echo "Starting MySQL and Redis..."
 $COMPOSE up -d mysql redis
 echo "Waiting for MySQL to be ready..."
 sleep 15
-echo "Running database migration..."
-$COMPOSE run --rm migrate || true
+# 迁移开关：.env 中 SKIP_MIGRATE=1 时跳过
+if [ "${SKIP_MIGRATE:-0}" = "1" ]; then
+  echo "Skipping database migration (SKIP_MIGRATE=1)"
+else
+  echo "Running database migration..."
+  $COMPOSE run --rm migrate || true
+fi
 
 echo "Pulling images..."
 $COMPOSE pull
