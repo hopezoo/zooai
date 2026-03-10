@@ -2,11 +2,9 @@
 # 镜像约定：统一 zooai- 前缀。gateway hopezoo/zooai-gateway:linux-<版本>；biz 产品 hopezoo/zooai-<产品>:backend-<端>-linux-<版本>；aishop 前端 hopezoo/zooai-aishop:frontend-<端>-linux-<版本>；migrate hopezoo/zooai-migrate:linux-<版本>
 # 使用前：
 #   1. 复制 .env.example 为 .env 并填写 REGISTRY、VERSION、MYSQL_*、REDIS_*、JWT_* 等
-#   2. 确保 configs/ 可访问：方式一）将项目 configs/ 复制到本目录（与 docker-compose.yml 同级）；方式二）在项目根目录执行 compose 时，../../configs 会指向项目 configs
-# 启动：docker compose --env-file .env up -d（在 scripts/deploy/docker 或项目根执行皆可）
+#   2. 将项目 configs/ 目录复制到本目录（与 docker-compose.yml 同级）
+# 启动：docker compose --env-file .env up -d
 # 首次部署请先执行：docker compose run --rm migrate
-
-version: '3.8'
 
 services:
   mysql:
@@ -47,7 +45,7 @@ services:
     environment:
       MYSQL_HOST: mysql:3306
     volumes:
-      - ../../configs:/configs:ro
+      - ./configs:/configs:ro
 
   aitransfer-client:
     image: ${REGISTRY:-hopezoo}/zooai-aitransfer:backend-client-linux-${VERSION:-latest}
@@ -62,7 +60,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: "6379"
     volumes:
-      - ../../configs:/configs:ro
+      - ./configs:/configs:ro
 
   aitransfer-admin:
     image: ${REGISTRY:-hopezoo}/zooai-aitransfer:backend-admin-linux-${VERSION:-latest}
@@ -77,7 +75,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: "6379"
     volumes:
-      - ../../configs:/configs:ro
+      - ./configs:/configs:ro
 
   aimirror-client:
     image: ${REGISTRY:-hopezoo}/zooai-aimirror:backend-client-linux-${VERSION:-latest}
@@ -92,7 +90,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: "6379"
     volumes:
-      - ../../configs:/configs:ro
+      - ./configs:/configs:ro
 
   aimirror-admin:
     image: ${REGISTRY:-hopezoo}/zooai-aimirror:backend-admin-linux-${VERSION:-latest}
@@ -107,7 +105,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: "6379"
     volumes:
-      - ../../configs:/configs:ro
+      - ./configs:/configs:ro
 
   aigateway-client:
     image: ${REGISTRY:-hopezoo}/zooai-aigateway:backend-client-linux-${VERSION:-latest}
@@ -122,7 +120,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: "6379"
     volumes:
-      - ../../configs:/configs:ro
+      - ./configs:/configs:ro
 
   aigateway-admin:
     image: ${REGISTRY:-hopezoo}/zooai-aigateway:backend-admin-linux-${VERSION:-latest}
@@ -137,7 +135,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: "6379"
     volumes:
-      - ../../configs:/configs:ro
+      - ./configs:/configs:ro
 
   aishop-client:
     image: ${REGISTRY:-hopezoo}/zooai-aishop:backend-client-linux-${VERSION:-latest}
@@ -152,7 +150,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: "6379"
     volumes:
-      - ../../configs:/configs:ro
+      - ./configs:/configs:ro
 
   aishop-admin:
     image: ${REGISTRY:-hopezoo}/zooai-aishop:backend-admin-linux-${VERSION:-latest}
@@ -167,7 +165,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: "6379"
     volumes:
-      - ../../configs:/configs:ro
+      - ./configs:/configs:ro
 
   gateway:
     image: ${REGISTRY:-hopezoo}/zooai-gateway:linux-${VERSION:-latest}
@@ -192,7 +190,7 @@ services:
       AISHOP_CLIENT_URL: http://aishop-client:8104
       AISHOP_ADMIN_URL: http://aishop-admin:8204
     volumes:
-      - ../../configs:/configs:ro
+      - ./configs:/configs:ro
 
   frontend-client:
     image: ${REGISTRY:-hopezoo}/zooai-aishop:frontend-client-linux-${VERSION:-latest}
