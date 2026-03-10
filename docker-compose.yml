@@ -4,7 +4,7 @@
 #   1. 复制 .env.example 为 .env 并填写 REGISTRY、VERSION、MYSQL_*、REDIS_*、JWT_* 等
 #   2. 将项目 configs/ 目录复制到本目录（与 docker-compose.yml 同级）
 # 启动：docker compose --env-file .env up -d
-# 首次部署请先执行：docker compose run --rm migrate
+# 迁移：deploy.sh 默认会执行 migrate；在 .env 中设 SKIP_MIGRATE=1 可跳过
 
 services:
   mysql:
